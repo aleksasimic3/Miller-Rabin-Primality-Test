@@ -12,7 +12,7 @@ isPrime.exe: main.o millerRabin.o millerRabinMP.o
 	$(CC) -o $(BINARY_DIR)isPrime.exe main.o millerRabin.o millerRabinMP.o $(CFLAGS) $(LIBS) -static
 
 test.exe: test.o millerRabin.o millerRabinMP.o
-	$(CC) -o $(BINARY_DIR)test.exe test.o millerRabin.o millerRabinMP.o $(CFLAGS) $(LIBS) -static
+	$(CC) -o $(TEST_DIR)test.exe test.o millerRabin.o millerRabinMP.o $(CFLAGS) $(LIBS) -static
 
 main.o: $(SOURCE_DIR)main.cpp $(INCLUDE_DIR)millerRabin.h $(INCLUDE_DIR)millerRabinMP.h
 	$(CC) -c -o main.o $(SOURCE_DIR)main.cpp  $(CFLAGS) $(INCLUDE)
