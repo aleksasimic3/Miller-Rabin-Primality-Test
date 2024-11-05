@@ -81,7 +81,7 @@ bool knownPrimesUintTest() {
 	std::cout << "(uint64_t) Testing known primes: ";
 
 	std::vector<uint64_t> numbers;
-	std::fstream in_file("./test/uint64_primes.txt"); //only works from root dir
+	std::fstream in_file("uint64_primes.txt"); //only works from root dir
 	if(in_file.is_open() == false) {
 		std::cout << "ERROR\n\tFile not found!\n";
 		return false;
@@ -110,7 +110,7 @@ bool knownPrimesMpzTest() {
 	std::cout << "(mpz_class) Testing known primes: ";
 
 	std::vector<mpz_class> numbers;
-	std::fstream in_file("./test/mpz_primes.txt");
+	std::fstream in_file("mpz_primes.txt");
 	if(in_file.is_open() == false) {
 		std::cout << "ERROR\n\tFile not found!\n";
 		return false;
