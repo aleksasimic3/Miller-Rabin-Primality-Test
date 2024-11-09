@@ -186,27 +186,21 @@ bool mersennePrimesTest() {
 	//uint64_t for small primes up to 2^64
 	std::cout << "(uint64_t) Testing Mersenne primes:\n";
 
-	std::vector<std::pair<std::string, uint64_t>> numbersUint;
-	std::fstream inputFile_uint("mersenne_primes_small.txt");
-	if(inputFile_uint.is_open() == false) {
+	std::fstream inputFile("mersenne_primes_small.txt");
+	if(inputFile.is_open() == false) {
 		std::cout << "ERROR\n\tFile not found! Run test.exe from 'test' directory.\n";
 		return false;		
 	}
 	std::string inputLine;
-	while(inputFile_uint >> inputLine) {
+	while(std::getline(inputFile, inputLine)) {
 		auto delimiterIndex = inputLine.find(',');
 		std::string powerTwoNotation = inputLine.substr(0, delimiterIndex);
 		uint64_t value = std::stoull(inputLine.substr(delimiterIndex+1));
-		numbersUint.push_back(std::pair<std::string, uint64_t>(powerTwoNotation, value));
-	}
-	inputFile_uint.close();
-
-	for(auto prime : numbersUint) {
-		std::cout << "\t" << prime.first << " (" << prime.second << "): ";
+		std::cout << "\t" << powerTwoNotation << ": ";
 
 		auto startTime = std::chrono::high_resolution_clock::now();
 
-		bool result = isPrime(prime.second);
+		bool result = isPrime(value);
 
 		auto endTime = std::chrono::high_resolution_clock::now();
 		auto timeElapsed = (endTime - startTime) / std::chrono::milliseconds(1);
@@ -217,8 +211,38 @@ bool mersennePrimesTest() {
 		}
 		std::cout << "OK (Calculated in " << timeElapsed << "ms)\n";
 	}
+	inputFile.close();
 
 	//mpz_class for large primes up to 2^4500
+	std::cout << "(mpz_class) Testing large Mersenne primes:\n";
+
+	inputFile.open("mersenne_primes_large.txt");
+	if(inputFile.is_open() == false) {
+		std::cout << "ERROR\n\tFile not found! Run test.exe from 'test' directory.\n";
+		return false;
+	}
+	while(std::getline(inputFile, inputLine)) {
+		auto firstDelimiterIndex = inputLine.find(',');
+		auto secondDelimiterIndex = inputLine.find(',', firstDelimiterIndex+1);
+		std::string powerTwoNotation = inputLine.substr(0, firstDelimiterIndex);
+		std::string numberOfDigits = inputLine.substr(firstDelimiterIndex+1, secondDelimiterIndex-firstDelimiterIndex-1);
+		mpz_class value(inputLine.substr(secondDelimiterIndex+1));
+		std::cout << "\t" << powerTwoNotation << ": ";
+
+		auto startTime = std::chrono::high_resolution_clock::now();
+
+		bool result = isPrime(value);
+
+		auto endTime = std::chrono::high_resolution_clock::now();
+		auto timeElapsed = (endTime - startTime) / std::chrono::milliseconds(1);
+
+		if(result == false) {
+			std::cout << "ERROR!\n";
+			return false;
+		}		
+		std::cout << "OK (Calculated in " << timeElapsed << "ms)\n";
+	}
+	inputFile.close();
 
 	return true;
 }
