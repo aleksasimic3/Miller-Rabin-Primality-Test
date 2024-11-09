@@ -11,6 +11,6 @@
 #include "millerRabin.h"
 
 //Multi precision overload of the Miller-Rabin primality test
-bool isPrime(mpz_class n, bool deterministic=false);
+bool isPrime(mpz_class n, bool deterministic=false); //add possible divisor
 
 #endif

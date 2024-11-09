@@ -11,8 +11,7 @@ int main(int argc, char* argv[]) {
 
 	auto startTime = std::chrono::high_resolution_clock::now();
 
-	//command line argument handling
-	//accept file name as input
+	//handle multiple numbers from the command line
 
 	mpz_class n;
 	if(argc > 1) {
