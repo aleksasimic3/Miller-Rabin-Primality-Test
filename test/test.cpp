@@ -23,7 +23,7 @@
 //validity tests
 bool knownPrimesUintTest();
 bool knownPrimesMpzTest();
-bool mersennePrimesTest(); //todo
+bool mersennePrimesTest();
 
 //bool knownCompositesUintTest(); //combine primes from above to make composite numbers
 //bool knownCompositesMpzTest();
