@@ -25,10 +25,11 @@ bool knownPrimesUintTest();
 bool knownPrimesMpzTest();
 bool mersennePrimesTest();
 
-//bool knownCompositesUintTest(); //combine primes from above to make composite numbers
-//bool knownCompositesMpzTest();
+bool knownSemiprimesUintTest(); //combine primes from above to make composite numbers
+//bool knownSemiprimesMpzTest();
 
 //speed tests
+//add divisor validation
 bool randomUintTest();
 bool randomMpzTest();
 bool dragRace(); //todo
@@ -42,14 +43,19 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	//mpz_class known primes
-	if(knownPrimesMpzTest() == false) {
+	if(knownSemiprimesUintTest() == false) {
 		std::cout << "Test stopped on error.\n";
 		return -1;
 	}
 
 	//uint64_t random numbers up to 2^64
-	randomUintTest();
+	randomUintTest(); //always passing
+
+	//mpz_class known primes
+	if(knownPrimesMpzTest() == false) {
+		std::cout << "Test stopped on error.\n";
+		return -1;
+	}
 
 	//mpz_class random numbers up to 2^1000
 	randomMpzTest();
@@ -163,20 +169,24 @@ bool randomMpzTest() {
 	rand.seed(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());	
 	unsigned primes = 0;
 	unsigned composites = 0;
-	//unsigned divisors = 0;
+	unsigned divisors = 0;
+	mpz_class possibleDivisor = mpz_class(0);
 
 	auto startTime = std::chrono::high_resolution_clock::now();
 	for(unsigned i = 0; i < limit; i++) {
+		possibleDivisor = 0;
 		mpz_class n = rand.get_z_range(upperBound);
-		//std::cout << '\n' << n.get_str() << '\n';
-		if(isPrime(n)) primes++;
-		else composites++;
+		if(isPrime(n, &possibleDivisor)) primes++;
+		else {
+			composites++;
+			if(possibleDivisor != 0) divisors++;
+		}
 	}
 	auto endTime = std::chrono::high_resolution_clock::now();
 	auto timeElapsed = (endTime - startTime) / std::chrono::milliseconds(1);
 
 	std::cout << "OK (Checked " << limit << " numbers in " << timeElapsed << "ms)\n";
-	std::cout << "\tPrimes: " << primes << "\n\tComposites: " << composites << '\n';	
+	std::cout << "\tPrimes: " << primes << "\n\tComposites: " << composites << "\n\tDivisors: " << divisors << '\n';	
 
 	return true;
 }
@@ -247,7 +257,38 @@ bool mersennePrimesTest() {
 	return true;
 }
 
-bool dragRace() {
+bool knownSemiprimesUintTest() {
+
+	std::cout << "(uint64_t) Testing known semiprime numbers: ";
+
+	std::vector<uint64_t> numbers;
+	std::fstream in_file("uint64_semiprimes.txt");
+	if(in_file.is_open() == false) {
+		std::cout << "ERROR\n\tFile not found! Run test.exe from 'test' directory.\n";
+		return false;
+	}
+
+	uint64_t x;
+	while(in_file >> x) numbers.push_back(x);
+	in_file.close();
+
+	auto startTime = std::chrono::high_resolution_clock::now();
+	for(auto n : numbers) {
+		if(isPrime(n) != false) {
+			std::cout << "ERROR\n\t" << n << " is composite, but test returned prime.\n";
+			return false;
+		}
+	}
+	auto endTime = std::chrono::high_resolution_clock::now();
+	auto timeElapsed = (endTime - startTime) / std::chrono::milliseconds(1);
+
+	std::cout << "OK (Checked " << numbers.size() << " numbers in " << timeElapsed << "ms)\n";
 
 	return true;
 }
+
+bool dragRace() { //?? xD //Oh test GMP and primitive type speed
+
+	return true;
+}
+

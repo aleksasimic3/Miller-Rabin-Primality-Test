@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	bool res = isPrime(n, false);
+	bool res = isPrime(n);
 
 	auto endTime = std::chrono::high_resolution_clock::now();
 	auto timeElapsed = endTime - startTime;

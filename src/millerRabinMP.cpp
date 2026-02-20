@@ -1,6 +1,7 @@
 #include "millerRabinMP.h"
 
 namespace {
+//x^p % n
 mpz_class powmod(mpz_class x, mpz_class p, mpz_class n) {
 	
 	if(p == 0) return mpz_class(1);
@@ -20,7 +21,17 @@ mpz_class powmod(mpz_class x, mpz_class p, mpz_class n) {
 	return (x*y)%n;
 }
 
-bool millerRabinCore(mpz_class s, mpz_class d, mpz_class a, mpz_class n) { //template
+mpz_class gcd_mpz(mpz_class x, mpz_class y) {
+	mpz_class t;
+	while(y != 0) {
+		t = y;
+		y = x % y;
+		x = t;
+	}
+	return x;
+}
+
+bool millerRabinCore(mpz_class s, mpz_class d, mpz_class a, mpz_class n) {
 
 	mpz_class x, y;
 
@@ -28,7 +39,10 @@ bool millerRabinCore(mpz_class s, mpz_class d, mpz_class a, mpz_class n) { //tem
 
 	for(mpz_class i(0); i < s; i++) {
 		y = powmod(x, 2, n);
-		if(y == 1 && x != 1 && x != n-1) return false; //found non trivial divisor of n
+		if(y == 1 && x != 1 && x != n-1) {
+			//if(divisor != nullptr) found non trivial divisor of n
+			return false;
+		}
 		x = y;
 	}
 
@@ -38,11 +52,11 @@ bool millerRabinCore(mpz_class s, mpz_class d, mpz_class a, mpz_class n) { //tem
 }
 }
 
-bool isPrime(mpz_class n, bool deterministic) {
+bool isPrime(mpz_class n, mpz_class* divisor, bool deterministic) {
 
 	const std::vector<unsigned> bases = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101};
 	const mpz_class magicNumber = mpz_class("3317044064679887385961981"); //no pseudoprimes smaller than magicNumber for above bases
-	const unsigned numberOfIterations = 100; //probability of error: 4^(-100) ~ 6.22 * 10^(-61)
+	const unsigned numberOfIterations = 50; //probability of error: 4^(-50) ~ 7.89 * 10^(-31)
 											//number of stars in the observable universe ~ 2 * 10^23
 											//number of grains of sand on Earth ~ 7.5 * 10^18
 
@@ -58,6 +72,7 @@ bool isPrime(mpz_class n, bool deterministic) {
 	for(auto prime : bases) {
 		if(n == prime) return true;
 		if(n % prime == 0) { //found non trivial divisor
+			if(divisor != nullptr) *divisor = mpz_class(prime);
 			return false;
 		}
 	}
