@@ -35,6 +35,8 @@ bool randomMpzTest();
 bool dragRace(); //todo
 
 int main(int argc, char* argv[]) {
+	auto startTime = std::chrono::high_resolution_clock::now();
+
 	std::cout << '\n';
 
 	//uint64_t known primes
@@ -65,6 +67,10 @@ int main(int argc, char* argv[]) {
 		std::cout << "Test stopped on error.\n";
 		return -1;
 	}
+
+	auto endTime = std::chrono::high_resolution_clock::now();
+	auto timeElapsed = (endTime - startTime) / std::chrono::milliseconds(1);
+	std::cout << "\n\nAll tests completed successfully in " << timeElapsed << "ms\n";
 
 	return 0;
 }
